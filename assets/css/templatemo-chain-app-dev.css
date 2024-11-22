@@ -143,7 +143,7 @@ global styles
 html,
 body {
   background: #fff;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 ::selection {
@@ -189,6 +189,7 @@ body {
   font-style: normal;
   color: #4b8ef1;
 }
+
 
 .section-heading img {
   width: 45px;
@@ -894,7 +895,7 @@ Banner Style
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
-  padding: 250px 120px 150px 120px;
+  padding: 245px 121px 0px 120px;
   position: relative;
   overflow: hidden;
 }
@@ -905,10 +906,10 @@ Banner Style
   background-repeat: no-repeat;
   background-size: contain;
   position: absolute;
-  left: 0px;
+  left: 670px;
   top: 0px;
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  height: 97.9%;
   z-index: 1;
 }
 
@@ -921,12 +922,18 @@ Banner Style
   position: relative;
   font-weight: 700;
   line-height: 80px;
-  font-size: 75px;
-  margin-bottom: 110px;
+  font-size: 70px;
+  margin-bottom: 10px;
+}
+
+.main-banner .left-content h2 em {
+  font-family: "Ubuntu";
+  font-style: normal;
+  color: #1b79a8;
 }
 
 .main-banner .left-content p {
-  margin-bottom: 45px;
+  margin-bottom: 125px;
   color: #2a2a2a;
   font-weight: 400;
 }
@@ -1097,7 +1104,7 @@ About Us
 */
 
 .about-us {
-  padding-top: 130px;
+  padding-top: 25px;
   position: relative;
 }
 
@@ -1154,7 +1161,9 @@ About Us
 }
 
 .about-us:after {
+  /*
   background-image: url(../images/about-bg.jpg);
+  */
   width: 777px;
   height: 1132px;
   content: '';
@@ -1166,6 +1175,16 @@ About Us
   z-index: 0;
 }
 
+.rowa {
+  --bs-gutter-x: 1.5rem;
+  --bs-gutter-y: 0;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row-reverse;
+  margin-top: calc(-1* var(--bs-gutter-y));
+  margin-right: calc(-.5* var(--bs-gutter-x));
+  margin-left: calc(-.5* var(--bs-gutter-x));
+}
 
 
 /* 
@@ -1349,11 +1368,11 @@ The Clients
   position: absolute;
   top: 0;
   left: 0;
-  background-image: url(../images/regular-table-top.png);
+  background-image: url(../images/hape.png);
   z-index: 0;
   content: '';
-  width: 274px;
-  height: 221px;
+  width: 400px;
+  height: 748px;
 }
 
 .pricing-item-regular:after {
@@ -1412,8 +1431,8 @@ The Clients
 
 .pricing-item-pro {
   box-shadow: 0px 0px 15px rgba(0,0,0,0.07);
-  border-radius: 50px;
-  padding: 120px 30px;
+  border-radius: 50px 50px 0px 0px;
+  padding: 75px 50px;
   text-align: center;
   position: relative;
   z-index: 1;
@@ -1424,14 +1443,14 @@ The Clients
   position: absolute;
   top: 0;
   left: 0;
-  background-image: url(../images/pro-table-top.png);
+  background-image: url(../images/hape.png);
   z-index: 0;
   content: '';
-  width: 281px;
-  height: 251px;
+  width: 500px;
+  height: 748px;
 }
 
-.pricing-item-pro:after {
+/*.pricing-item-pro:after {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -1442,7 +1461,7 @@ The Clients
   content: '';
   width: 100%;
   height: 201px;
-}
+} */
 
 .pricing-item-pro span.price {
   font-size: 40px;
