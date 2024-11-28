@@ -127,7 +127,7 @@ p {
   font-size: 15px;
   line-height: 30px;
   font-weight: 300;
-  color: #afafaf;
+  color: #2d3954;
 }
 
 img {
@@ -1176,14 +1176,17 @@ About Us
 }
 
 .rowa {
+  
   --bs-gutter-x: 1.5rem;
   --bs-gutter-y: 0;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row-reverse;
+  /*
   margin-top: calc(-1* var(--bs-gutter-y));
   margin-right: calc(-.5* var(--bs-gutter-x));
-  margin-left: calc(-.5* var(--bs-gutter-x));
+  margin-left: calc(-.5* var(--bs-gutter-x)); 
+  */
 }
 
 
@@ -1590,13 +1593,14 @@ Footer Style
 */
 
 footer {
-  background-image: url(../images/footer-bg.png);
+  /* background-image: url(../images/footer-bg.png); */
+  background-color:#105b81;
   background-position: center top;
   background-repeat: no-repeat;
   background-size: cover;
-  margin-top: 130px;
-  padding-top: 300px;
-  padding-bottom: 60px;
+  margin-top: 50px;
+  /*padding-top: 20px; */
+  padding-bottom: 20px;
 }
 
 footer .section-heading {
@@ -1646,7 +1650,7 @@ footer #search button:hover {
 }
 
 .footer-widget .logo img {
-  max-width: 96px;
+  max-width: 200px;
   margin-bottom: 30px;
 }
 
@@ -1692,14 +1696,14 @@ footer #search button:hover {
 }
 
 footer .copyright-text p {
-  text-align: center;
+  text-align: left;
   margin-top: 50px;
   margin-bottom: 0px;
-  color: #fff;
+  color: #858b9f;
 }
 
 footer p a {
-  color: #fff;
+  color: #858b9f;
   transition: all .5s;
 }
 
@@ -2110,18 +2114,26 @@ responsive
   }
   footer {
     padding-top: 0px;
-    text-align: center;
+    text-align: left;
   }
   .footer-widget ul {
     display: block;
     width: 100%;
     float: none;
-    text-align: center;
-    margin: 0 auto;
+    text-align: left;
+    margin: 0px;
+  }
+  .footer-widget p {
+    text-align: left;
   }
   .footer-widget h4 {
+    text-align: left;
     margin-top: 45px;
     margin-bottom: 20px;
+  }
+  .footer-widget .logo img {
+    margin-top: 20px;
+    text-align: left;
   }
   footer #search input {
     border: 1px solid #eee;
