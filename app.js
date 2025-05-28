@@ -293,3 +293,140 @@ if (locations.length === 0) {
     updateLocationsList();
     saveToLocalStorage();
 }
+
+
+// Fungsi untuk memproses file CSV
+document.getElementById('csv-file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const contents = e.target.result;
+        previewCSV(contents);
+    };
+    reader.readAsText(file);
+});
+
+// Fungsi untuk preview CSV
+function previewCSV(csvData) {
+    const delimiter = document.getElementById('csv-delimiter').value;
+    const previewTable = document.getElementById('csv-preview-table');
+    previewTable.innerHTML = '';
+    
+    // Parse CSV
+    const lines = csvData.split('\n');
+    const headers = lines[0].split(delimiter);
+    
+    // Buat tabel preview
+    const table = document.createElement('table');
+    table.className = 'preview-table';
+    
+    // Tambahkan header
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    
+    headers.forEach(header => {
+        const th = document.createElement('th');
+        th.textContent = header.trim();
+        headerRow.appendChild(th);
+    });
+    
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    
+    // Tambahkan 5 baris pertama sebagai preview
+    const tbody = document.createElement('tbody');
+    const previewLines = Math.min(5, lines.length - 1);
+    
+    for (let i = 1; i <= previewLines; i++) {
+        if (!lines[i]) continue;
+        
+        const row = document.createElement('tr');
+        const cells = lines[i].split(delimiter);
+        
+        cells.forEach(cell => {
+            const td = document.createElement('td');
+            td.textContent = cell.trim();
+            row.appendChild(td);
+        });
+        
+        tbody.appendChild(row);
+    }
+    
+    table.appendChild(tbody);
+    previewTable.appendChild(table);
+}
+
+// Fungsi untuk import data dari CSV
+document.getElementById('import-csv').addEventListener('click', function() {
+    const fileInput = document.getElementById('csv-file');
+    const delimiter = document.getElementById('csv-delimiter').value;
+    
+    if (!fileInput.files.length) {
+        alert('Silakan pilih file CSV terlebih dahulu');
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        const csvData = e.target.result;
+        const lines = csvData.split('\n');
+        const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
+        
+        // Validasi kolom wajib
+        const requiredColumns = ['nama', 'latitude', 'longitude', 'jenis'];
+        const missingColumns = requiredColumns.filter(col => !headers.includes(col));
+        
+        if (missingColumns.length > 0) {
+            alert(`Kolom wajib tidak ditemukan: ${missingColumns.join(', ')}`);
+            return;
+        }
+        
+        // Proses setiap baris data
+        let importedCount = 0;
+        
+        for (let i = 1; i < lines.length; i++) {
+            if (!lines[i].trim()) continue;
+            
+            const values = lines[i].split(delimiter);
+            if (values.length < headers.length) continue;
+            
+            const rowData = {};
+            headers.forEach((header, index) => {
+                rowData[header] = values[index] ? values[index].trim() : '';
+            });
+            
+            // Validasi data
+            const lat = parseFloat(rowData.latitude);
+            const lng = parseFloat(rowData.longitude);
+            
+            if (isNaN(lat) || isNaN(lng)) {
+                console.warn(`Baris ${i+1}: Koordinat tidak valid - ${rowData.latitude}, ${rowData.longitude}`);
+                continue;
+            }
+            
+            // Tambahkan ke daftar lokasi
+            const newLocation = {
+                id: Date.now() + i,
+                type: rowData.jenis.toLowerCase() || 'masjid',
+                name: rowData.nama || 'Tanpa Nama',
+                address: rowData.alamat || '',
+                lat: lat,
+                lng: lng
+            };
+            
+            locations.push(newLocation);
+            addMarkerToMap(newLocation);
+            importedCount++;
+        }
+        
+        updateLocationsList();
+        saveToLocalStorage();
+        alert(`Berhasil mengimpor ${importedCount} data dari CSV`);
+    };
+    
+    reader.readAsText(file);
+});
