@@ -1,7 +1,6 @@
 // Ganti bagian inisialisasi peta dan tile layer dengan kode berikut:
 
-// Inisialisasi peta
-const map = L.map('map').setView([-7.2575, 112.7521], 12);
+const map = L.map('map').setView([-7.9167, 111.4667], 12); // Default view Ponorogo
 
 // Daftar layer peta yang tersedia
 const baseLayers = {
@@ -255,34 +254,34 @@ if (locations.length === 0) {
         {
             id: 1,
             type: 'masjid',
-            name: 'Masjid Agung Surabaya',
-            address: 'Jl. Masjid Agung Tim. No.1, Alun-alun Contong, Kec. Bubutan, Kota SBY, Jawa Timur',
-            lat: -7.2458,
-            lng: 112.7378
+            name: 'Masjid Agung Ponorogo',
+            address: 'Jl. K.H. Hasyim Asyari, Sukun, Kauman, Kec. Ponorogo, Kabupaten Ponorogo, Jawa Timur 63414',
+            lat: -7.871264,
+            lng: 111.460643
         },
         {
             id: 2,
             type: 'sekolah',
-            name: 'SD Islam Al-Azhar',
-            address: 'Jl. Raya Manyar No.2, Gubeng, Kota SBY, Jawa Timur',
-            lat: -7.2653,
-            lng: 112.7536
+            name: 'Pondok Pesantren Gontor',
+            address: 'Jl. Raya Gontor No.1, Ponorogo',
+            lat: -7.8936,
+            lng: 111.5254
         },
         {
             id: 3,
             type: 'yayasan',
-            name: 'Yayasan Dana Sosial Al Falah',
-            address: 'Jl. Raya Darmo Permai III No.26, Surabaya',
-            lat: -7.2865,
-            lng: 112.7354
+            name: 'Yayasan Darussalam Gontor',
+            address: 'Komplek Pondok Modern Gontor',
+            lat: -7.8940,
+            lng: 111.5250
         },
         {
             id: 4,
             type: 'wakaf',
-            name: 'Tanah Wakaf Al-Hidayah',
-            address: 'Jl. Raya Kendangsari No.45, Surabaya',
-            lat: -7.3128,
-            lng: 112.7221
+            name: 'Tanah Wakaf Al-Ikhlas',
+            address: 'Jl. Diponegoro, Ponorogo',
+            lat: -7.9180,
+            lng: 111.4632
         }
     ];
     
