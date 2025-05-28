@@ -1,765 +1,277 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Liputan6-like News Portal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+<html lang="id">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemetaan Lembaga Islam</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap");
-      body {
-        font-family: "Poppins", sans-serif;
-      }
-
-      .img {
-        font-family: "Poppins", sans-serif;
-      }
-
-      .font-sub {
-        font-family: Verdana, Geneva, Tahoma, sans-serif;
-      }
-
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
         }
-        100% {
-          transform: rotate(360deg);
+
+        #header {
+            background-color: #2c7a51;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
-      }
 
-      .bg-blackish {
-        background-color: #111; /* Slightly lighter than pure black for better contrast */
-      }
+        #container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
 
-      .text-redish {
-        color: #d00; /* Slightly toned down red */
-      }
-      #changing-text {
-        transition: opacity 1s ease-in-out;
-      }
-    </style>
-  </head>
-  <body class="bg-gray-100">
-    <div
-      id="loading-screen"
-      style="
-        position: fixed;
-        top: 0;
-        left: 0;
+        #sidebar {
+            width: 350px;
+            background-color: #f5f5f5;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #map {
+            flex-grow: 1;
+            height: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #2c7a51;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background-color: #1e563d;
+        }
+
+        .location-item {
+            background: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .location-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .location-title {
+            font-weight: bold;
+            color: #2c7a51;
+        }
+
+        .location-type {
+            display: inline-block;
+            padding: 2px 5px;
+            background-color: #e1f5e8;
+            color: #2c7a51;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .legend {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+            line-height: 1.5;
+        }
+
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+
+        .filter-controls {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .filter-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* Tambahkan di bagian <style> dalam index.html atau file CSS terpisah */
+        .leaflet-control-layers {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .leaflet-control-layers label {
+            display: block;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+
+        .leaflet-control-layers-toggle {
+            background-image: url('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/layers.png');
+            width: 36px;
+            height: 36px;
+        }
+
+        #header {
+    background-color: #2c7a51;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.logo-container {
+    background-color: #1e563d;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.title-container {
+    padding: 10px 20px;
+    flex-grow: 1;
+}
+
+.title-container h1 {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+.title-container .subtitle {
+    margin: 0;
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.logo {
+    height: 50px;
+    max-width: 200px;
+    object-fit: contain;
+}
+
+@media (max-width: 768px) {
+    #header {
+        flex-direction: column;
+    }
+    
+    .logo-container {
         width: 100%;
-        height: 100%;
-        background-color: rgba(255, 255, 255, 0.8);
-        display: flex;
         justify-content: center;
-        align-items: center;
-        z-index: 9999;
-      "
-    >
-      <div
-        style="
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          border: 5px solid red;
-          border-top-color: white;
-          animation: spin 1s linear infinite;
-        "
-      ></div>
+        padding: 10px;
+    }
+    
+    .title-container {
+        text-align: center;
+        padding: 10px;
+    }
+    
+    .title-container h1 {
+        font-size: 1.2rem;
+    }
+}
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <div class="logo-container">
+            <img src="logo.png" alt="Logo Lembaga" class="logo">
+        </div>
+        <div class="title-container">
+            <h1>Pemetaan Sebaran Tanah Wakaf</h1>
+            <p class="subtitle">Sistem Informasi Geografis Tanah Wakaf</p>
+        </div>
     </div>
-    <header
-      class="bg-blackish shadow-md"
-      style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        background-color: black;
-      "
-    >
-      <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between py-4">
-          <div class="flex items-center">
-            <img
-              src="images/peta-logo.png"
-              alt="Liputan6 Logo"
-              class="h-12 mr-2"
-            />
-            <div class="flex items-center font-sub">
-              <div class="text-3xl font-bold text-[#be2c13] mr-2">Peta</div>
-              <div class="text-3xl font-bold text-white mr-2">Project</div>
+
+    <div id="container">
+        <div id="sidebar">
+            <h3>Tambah Lokasi Baru</h3>
+            <div class="form-group">
+                <label for="location-type">Jenis Lokasi</label>
+                <select id="location-type">
+                    <option value="masjid">Masjid</option>
+                    <option value="sekolah">Sekolah Islam</option>
+                    <option value="yayasan">Yayasan Islam</option>
+                    <option value="wakaf">Aset Wakaf</option>
+                </select>
             </div>
-          </div>
+            <div class="form-group">
+                <label for="location-name">Nama Lokasi</label>
+                <input type="text" id="location-name" placeholder="Misal: Masjid Agung Surabaya">
+            </div>
+            <div class="form-group">
+                <label for="location-address">Alamat</label>
+                <input type="text" id="location-address" placeholder="Alamat lengkap">
+            </div>
+            <div class="form-group">
+                <label for="location-lat">Latitude</label>
+                <input type="text" id="location-lat" placeholder="Contoh: -7.2575">
+            </div>
+            <div class="form-group">
+                <label for="location-lng">Longitude</label>
+                <input type="text" id="location-lng" placeholder="Contoh: 112.7521">
+            </div>
+            <button id="add-location">Tambahkan ke Peta</button>
+            <button id="get-location">Dapatkan Lokasi Saya</button>
 
-          <div class="md:hidden">
-            <button
-              id="menuBtn"
-              class="text-white hover:text-redish focus:outline-none"
-            >
-              <svg
-                id="hamburgerIcon"
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                ></path>
-              </svg>
-              <svg
-                id="closeIcon"
-                class="w-6 h-6 hidden"
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                class="bi bi-x-lg"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"
-                />
-              </svg>
-            </button>
-          </div>
+            <div class="filter-controls">
+                <div class="filter-title">Filter Tampilan</div>
+                <label><input type="checkbox" class="filter-type" value="masjid" checked> Masjid</label>
+                <label><input type="checkbox" class="filter-type" value="sekolah" checked> Sekolah Islam</label>
+                <label><input type="checkbox" class="filter-type" value="yayasan" checked> Yayasan</label>
+                <label><input type="checkbox" class="filter-type" value="wakaf" checked> Aset Wakaf</label>
+            </div>
 
-          <div class="hidden md:flex space-x-4">
-            <a href="#" class="text-gray-300 hover:text-redish">Beranda</a>
-            <a href="#" class="text-gray-300 hover:text-redish">Berita</a>
-            <a href="#" class="text-gray-300 hover:text-redish">Opini</a>
-            <a href="#" class="text-gray-300 hover:text-redish">Podcast</a>
-          </div>
+            <h3>Daftar Lokasi</h3>
+            <div id="locations-list"></div>
         </div>
-      </div>
+        <div id="map"></div>
+    </div>
 
-      <div id="mobileMenu" class="hidden md:hidden bg-blackish p-4">
-        <a href="#" class="block text-gray-300 hover:text-redish py-2"
-          >Beranda</a
-        >
-        <a href="#" class="block text-gray-300 hover:text-redish py-2"
-          >Berita</a
-        >
-        <a href="#" class="block text-gray-300 hover:text-redish py-2">Opini</a>
-        <a href="#" class="block text-gray-300 hover:text-redish py-2"
-          >Podcast</a
-        >
-      </div>
-    </header>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="/js/app.js"></script>
+</body>
 
-    <!-- Breaking News -->
-
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8" style="margin-top: 50px">
-      <div
-        class="overflow-hidden flex lg:flex-row-reverse flex-col mb-8 mt-10"
-        data-aos="zoom-in"
-      >
-        <img
-          src="images/login.png"
-          alt="Gambar Utama"
-          class="w-full lg:w-1/2 h-96 object-cover rounded-lg hidden lg:block"
-        />
-        <div
-          class="lg:w-1/2 me-5"
-          style="
-            background-image: url('images/indo1.svg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: 600px;
-          "
-        >
-          <h1 class="text-4xl font-bold mb-2">Peta Project</h1>
-          <p class="text-gray-600 text-justify mb-8">
-            Podcast dan Talkshow yang memiliki visi menjadi sumber cahaya yang
-            menerangi kompleksitas sosial, politik, hukum dan isu-isu terkini.
-            Peta project hadir sebagai media education dalam melakukan transfer
-            of knowladge, transfer of tools, opinion making dan paradigma
-            shifting.
-          </p>
-          <p class="text-black font-bold text-justify">
-            Call us (0123) 456 - 789
-          </p>
-          <p class="text-gray-600 text-justify">For any question or concern</p>
-        </div>
-      </div>
-      <div class="bg-red-800 py-2 mb-4 rounded-lg">
-        <div class="container mx-auto px-4">
-          <p
-            class="breaking-news text-sm font-bold text-white transition duration-500 ease-in-out"
-          >
-            BREAKING NEWS: <span id="changing-text"></span>
-          </p>
-        </div>
-      </div>
-      <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Left Column (Main Content) -->
-        <div class="w-full lg:w-2/3">
-          <!-- News Grid -->
-          <h2 class="text-xl font-bold mb-4 text-red-600">Terkini</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div
-              class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col relative"
-            >
-              <img
-                src="images/login.png"
-                alt="News Item"
-                class="w-full h-48 object-cover"
-              />
-              <div
-                class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full"
-              >
-                <span class="text-xs">Politik</span>
-              </div>
-              <div class="p-4 flex-grow">
-                <div class="flex items-center justify-between mb-2">
-                  <div>
-                    <span class="text-gray-500 text-xs">Penulis: John Doe</span>
-                  </div>
-                  <div>
-                    <span class="text-gray-500 text-xs">12 Januari 2024</span>
-                  </div>
-                </div>
-                <h3 class="font-bold mb-2">Berita Politik Terkini</h3>
-                <p class="text-gray-600 text-sm">
-                  Deskripsi singkat berita politik di sini.
-                </p>
-              </div>
-            </div>
-            <div
-              class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col relative"
-            >
-              <img
-                src="images/login.png"
-                alt="News Item"
-                class="w-full h-48 object-cover"
-              />
-              <div
-                class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full"
-              >
-                <span class="text-xs">Politik</span>
-              </div>
-              <div class="p-4 flex-grow">
-                <div class="flex items-center justify-between mb-2">
-                  <div>
-                    <span class="text-gray-500 text-xs">Penulis: John Doe</span>
-                  </div>
-                  <div>
-                    <span class="text-gray-500 text-xs">12 Januari 2024</span>
-                  </div>
-                </div>
-                <h3 class="font-bold mb-2">Berita Politik Terkini</h3>
-                <p class="text-gray-600 text-sm">
-                  Deskripsi singkat berita politik di sini.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Category Sections -->
-          <div class="space-y-8">
-            <!-- News Category -->
-            <div>
-              <h2 class="text-xl font-bold mb-4 text-red-600">Berita</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div
-                  class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col relative"
-                >
-                  <img
-                    src="images/login.png"
-                    alt="News Item"
-                    class="w-full h-48 object-cover"
-                  />
-                  <div
-                    class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full"
-                  >
-                    <span class="text-xs">Politik</span>
-                  </div>
-                  <div class="p-4 flex-grow">
-                    <div class="flex items-center justify-between mb-2">
-                      <div>
-                        <span class="text-gray-500 text-xs"
-                          >Penulis: John Doe</span
-                        >
-                      </div>
-                      <div>
-                        <span class="text-gray-500 text-xs"
-                          >12 Januari 2024</span
-                        >
-                      </div>
-                    </div>
-                    <h3 class="font-bold mb-2">Berita Politik Terkini</h3>
-                    <p class="text-gray-600 text-sm">
-                      Deskripsi singkat berita politik di sini.
-                    </p>
-                  </div>
-                </div>
-                <div
-                  class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col relative"
-                >
-                  <img
-                    src="images/login.png"
-                    alt="News Item"
-                    class="w-full h-48 object-cover"
-                  />
-                  <div
-                    class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full"
-                  >
-                    <span class="text-xs">Politik</span>
-                  </div>
-                  <div class="p-4 flex-grow">
-                    <div class="flex items-center justify-between mb-2">
-                      <div>
-                        <span class="text-gray-500 text-xs"
-                          >Penulis: John Doe</span
-                        >
-                      </div>
-                      <div>
-                        <span class="text-gray-500 text-xs"
-                          >12 Januari 2024</span
-                        >
-                      </div>
-                    </div>
-                    <h3 class="font-bold mb-2">Berita Politik Terkini</h3>
-                    <p class="text-gray-600 text-sm">
-                      Deskripsi singkat berita politik di sini.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Bisnis Category -->
-            <div>
-              <h2 class="text-xl font-bold mb-4 text-red-600">Opini</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div
-                  class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col relative"
-                >
-                  <img
-                    src="images/login.png"
-                    alt="News Item"
-                    class="w-full h-48 object-cover"
-                  />
-                  <div
-                    class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full"
-                  >
-                    <span class="text-xs">Politik</span>
-                  </div>
-                  <div class="p-4 flex-grow">
-                    <div class="flex items-center justify-between mb-2">
-                      <div>
-                        <span class="text-gray-500 text-xs"
-                          >Penulis: John Doe</span
-                        >
-                      </div>
-                      <div>
-                        <span class="text-gray-500 text-xs"
-                          >12 Januari 2024</span
-                        >
-                      </div>
-                    </div>
-                    <h3 class="font-bold mb-2">Berita Politik Terkini</h3>
-                    <p class="text-gray-600 text-sm">
-                      Deskripsi singkat berita politik di sini.
-                    </p>
-                  </div>
-                </div>
-                <div
-                  class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col relative"
-                >
-                  <img
-                    src="images/login.png"
-                    alt="News Item"
-                    class="w-full h-48 object-cover"
-                  />
-                  <div
-                    class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full"
-                  >
-                    <span class="text-xs">Politik</span>
-                  </div>
-                  <div class="p-4 flex-grow">
-                    <div class="flex items-center justify-between mb-2">
-                      <div>
-                        <span class="text-gray-500 text-xs"
-                          >Penulis: John Doe</span
-                        >
-                      </div>
-                      <div>
-                        <span class="text-gray-500 text-xs"
-                          >12 Januari 2024</span
-                        >
-                      </div>
-                    </div>
-                    <h3 class="font-bold mb-2">Berita Politik Terkini</h3>
-                    <p class="text-gray-600 text-sm">
-                      Deskripsi singkat berita politik di sini.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <h2 class="text-xl font-bold mb-4 text-red-600">Podcast</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div
-                  class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col relative"
-                >
-                  <img
-                    src="images/login.png"
-                    alt="News Item"
-                    class="w-full h-48 object-cover"
-                  />
-                  <div
-                    class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full"
-                  >
-                    <span class="text-xs">Politik</span>
-                  </div>
-                  <div class="p-4 flex-grow">
-                    <div class="flex items-center justify-between mb-2">
-                      <div>
-                        <span class="text-gray-500 text-xs"
-                          >Penulis: John Doe</span
-                        >
-                      </div>
-                      <div>
-                        <span class="text-gray-500 text-xs"
-                          >12 Januari 2024</span
-                        >
-                      </div>
-                    </div>
-                    <h3 class="font-bold mb-2">Berita Politik Terkini</h3>
-                    <p class="text-gray-600 text-sm">
-                      Deskripsi singkat berita politik di sini.
-                    </p>
-                  </div>
-                </div>
-                <div
-                  class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col relative"
-                >
-                  <img
-                    src="images/login.png"
-                    alt="News Item"
-                    class="w-full h-48 object-cover"
-                  />
-                  <div
-                    class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full"
-                  >
-                    <span class="text-xs">Politik</span>
-                  </div>
-                  <div class="p-4 flex-grow">
-                    <div class="flex items-center justify-between mb-2">
-                      <div>
-                        <span class="text-gray-500 text-xs"
-                          >Penulis: John Doe</span
-                        >
-                      </div>
-                      <div>
-                        <span class="text-gray-500 text-xs"
-                          >12 Januari 2024</span
-                        >
-                      </div>
-                    </div>
-                    <h3 class="font-bold mb-2">Berita Politik Terkini</h3>
-                    <p class="text-gray-600 text-sm">
-                      Deskripsi singkat berita politik di sini.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Column (Sidebar) -->
-        <div class="w-full lg:w-1/3">
-          <!-- Popular News -->
-          <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-xl font-bold mb-2">Iklan</h2>
-            <ul class="space-y-4">
-              <li class="flex items-center justify-center">
-                <img
-                  src="images/login.png"
-                  alt="Iklan 1"
-                  class="rounded-lg object-contain"
-                  style="width: 400px; height: 400px"
-                />
-              </li>
-            </ul>
-          </div>
-          <!-- Video Section -->
-          <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-xl font-bold mb-4">Vidio Terbaru</h2>
-            <div class="space-y-4">
-              <div>
-                <div class="h-40 mb-2">
-                  <iframe
-                    src="https://www.youtube.com/embed/DXMfoLTIeoE"
-                    title="YouTube video player"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen
-                    style="height: 100%; width: 100%; border-radius: 10px"
-                  ></iframe>
-                </div>
-              </div>
-              <div>
-                <div class="h-40 mb-2">
-                  <iframe
-                    src="https://www.youtube.com/embed/DXMfoLTIeoE"
-                    title="YouTube video player"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen
-                    style="height: 100%; width: 100%; border-radius: 10px"
-                  ></iframe>
-                </div>
-              </div>
-              <div>
-                <div class="h-40 mb-2">
-                  <iframe
-                    src="https://www.youtube.com/embed/DXMfoLTIeoE"
-                    title="YouTube video player"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen
-                    style="height: 100%; width: 100%; border-radius: 10px"
-                  ></iframe>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-xl font-bold mb-4">Berita Populer</h2>
-            <ul class="space-y-4">
-              <li class="flex items-center">
-                <img
-                  src="images/login.png"
-                  alt="1"
-                  class="w-10 h-10 mr-4 rounded-lg"
-                />
-                <p class="text-sm">Judul berita populer pertama di sini</p>
-              </li>
-              <li class="flex items-center">
-                <img
-                  src="images/login.png"
-                  alt="2"
-                  class="w-10 h-10 mr-4 rounded-lg"
-                />
-                <p class="text-sm">Judul berita populer kedua di sini</p>
-              </li>
-              <li class="flex items-center">
-                <img
-                  src="images/login.png"
-                  alt="3"
-                  class="w-10 h-10 mr-4 rounded-lg"
-                />
-                <p class="text-sm">Judul berita populer ketiga di sini</p>
-              </li>
-              <li class="flex items-center">
-                <img
-                  src="images/login.png"
-                  alt="4"
-                  class="w-10 h-10 mr-4 rounded-lg"
-                />
-                <p class="text-sm">Judul berita populer keempat di sini</p>
-              </li>
-              <li class="flex items-center">
-                <img
-                  src="images/login.png"
-                  alt="5"
-                  class="w-10 h-10 mr-4 rounded-lg"
-                />
-                <p class="text-sm">Judul berita populer kelima di sini</p>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Tag Cloud -->
-          <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-xl font-bold mb-4">Tag Populer</h2>
-            <div class="flex flex-wrap gap-2">
-              <span class="bg-gray-200 px-2 py-1 rounded-full text-sm"
-                >#Politik</span
-              >
-              <span class="bg-gray-200 px-2 py-1 rounded-full text-sm"
-                >#Ekonomi</span
-              >
-              <span class="bg-gray-200 px-2 py-1 rounded-full text-sm"
-                >#COVID19</span
-              >
-              <span class="bg-gray-200 px-2 py-1 rounded-full text-sm"
-                >#Olahraga</span
-              >
-              <span class="bg-gray-200 px-2 py-1 rounded-full text-sm"
-                >#Teknologi</span
-              >
-              <span class="bg-gray-200 px-2 py-1 rounded-full text-sm"
-                >#Hiburan</span
-              >
-              <span class="bg-gray-200 px-2 py-1 rounded-full text-sm"
-                >#Pendidikan</span
-              >
-              <span class="bg-gray-200 px-2 py-1 rounded-full text-sm"
-                >#Kesehatan</span
-              >
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-black text-white py-8">
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <img
-              src="images/navigasi.svg"
-              alt="Peta Project"
-              style="width: auto; height: 180px; margin-bottom: 0rem"
-            />
-          </div>
-          <div>
-            <h3 class="text-lg font-bold mb-4">Kategori</h3>
-            <ul class="text-sm space-y-2">
-              <li><a href="#" class="hover:text-red-600">Berita</a></li>
-              <li><a href="#" class="hover:text-red-600">Opini</a></li>
-              <li><a href="#" class="hover:text-red-600">Podcast</a></li>
-            </ul>
-          </div>
-          <div>
-            <h3 class="text-lg font-bold mb-4">Lokasi</h3>
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3952.3526033590856!2d111.49908107513767!3d-7.858117678110624!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zN8KwNTEnMjkuMiJTIDExMcKwMzAnMDYuMCJF!5e0!3m2!1sid!2sid!4v1736426093757!5m2!1sid!2sid"
-              class="w-full rounded-lg"
-              style="border: 0"
-              allowfullscreen=""
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            >
-            </iframe>
-          </div>
-          <div class="grid-cols-1">
-            <h3 class="text-lg font-bold mb-4">Ikuti Kami</h3>
-            <div class="flex space-x-4">
-              <a href="#" class="text-white hover:text-red-600">
-                <svg
-                  class="w-6 h-6"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </a>
-              <a href="#" class="text-white hover:text-red-600">
-                <svg
-                  class="w-6 h-6"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"
-                  />
-                </svg>
-              </a>
-              <a href="#" class="text-white hover:text-red-600">
-                <svg
-                  class="w-6 h-6"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-    <footer class="bg-black pt-10 pb-5">
-      <div class="flex items-center">
-        <div class="border-t border-4 border-[#be2c13] flex-grow"></div>
-        <div class="px-3 text-white text-l">
-          <span> © </span>
-          <script>
-            document.write(new Date().getFullYear());
-          </script>
-          <span>Peta Project | All Rights Reserved.</span>
-        </div>
-        <div class="border-t border-4 border-[#be2c13] flex-grow"></div>
-      </div>
-    </footer>
-
-    <script>
-      const menuBtn = document.getElementById("menuBtn");
-      const mobileMenu = document.getElementById("mobileMenu");
-      const hamburgerIcon = document.getElementById("hamburgerIcon");
-      const closeIcon = document.getElementById("closeIcon");
-
-      menuBtn.addEventListener("click", () => {
-        mobileMenu.classList.toggle("hidden");
-        hamburgerIcon.classList.toggle("hidden");
-        closeIcon.classList.toggle("hidden");
-      });
-    </script>
-    <script>
-      window.addEventListener("load", (event) => {
-        const loadingScreen = document.getElementById("loading-screen");
-        loadingScreen.style.display = "none";
-      });
-    </script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-      AOS.init({
-        duration: 1000,
-        offset: 100,
-        once: true,
-      });
-    </script>
-    <script>
-      const changingText = document.getElementById("changing-text");
-      const messages = [
-        "Pemerintah Umumkan Kebijakan Ekonomi Baru",
-        "Harga Bahan Pokok Stabil",
-        "Cuaca Ekstrem Melanda Jakarta",
-      ];
-      let currentMessageIndex = 0;
-
-      function changeMessage() {
-        changingText.style.opacity = 0; // Fade out
-
-        setTimeout(() => {
-          changingText.textContent = messages[currentMessageIndex];
-          changingText.style.opacity = 1; // Fade in
-
-          currentMessageIndex = (currentMessageIndex + 1) % messages.length;
-        }, 500);
-      }
-
-      setInterval(changeMessage, 3000);
-
-      changingText.textContent = messages[0];
-      changingText.style.opacity = 1;
-    </script>
-  </body>
 </html>
